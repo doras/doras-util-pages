@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .btn {
+            height: 200px;
+            width: 300px;
+            font-size: 40px;
+        }
+        
+        .dp_block {
+            display: block;
+        }
+
+        .input {
+            height: 50px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        주석 작성자 : 
+        <input type="text" id="author-input" class="input">       
+    </div>
+    <button class="btn" onclick="fnOnClickJspBtn();">JSP</button>
+    <button class="btn" onclick="fnOnClickSqlBtn();">SQL</button>
+    <p style="background-color: gainsboro;">
+        console :<br><span id="console-span"></span>
+    </p>
+    <script src="https://unpkg.com/moment"></script>
+    <script>
+        var jspDocsTemplate = 
+                "<%--\n"
+                + "***************************************\n"
+                + "@ function : 함수설명\n"
+                + "@ comment  : 코멘트\n"
+                + "@ parameter : 파라미터 - 파라미터설명\n"
+                + "@ history  : ${today} (최초작성)\n"
+                + "****************************************\n"
+                + "--%>";
+        
+        var sqlDocsTemplate = 
+                "<!--\n"
+                + "설명: 쿼리설명\n"
+                + "작성자: ${author}\n"
+                + "최초작성일: ${today}\n"
+                + "수정일		수정자  	수정내용\n"
+                + "=====================================\n"
+                + "-->";
+
+        const authorInputElement = document.getElementById("author-input");
+
+        (function() {
+            const savedAuthorStr = localStorage.getItem("author");
+            authorInputElement.value = savedAuthorStr;
+
+            authorInputElement.addEventListener("change", function() {
+                const authorStr = authorInputElement.value;
+                localStorage.setItem("author", authorStr);
+            });
+        })();
+
+        function fnOnClickJspBtn() {
+            const tmpInput = document.createElement("textarea");
+            const docsString = jspDocsTemplate.replace("${today}", moment().format("YYYY-MM-DD"));
+            tmpInput.value = docsString;
+            document.body.appendChild(tmpInput);
+            tmpInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tmpInput);
+            
+            printConsoleSpan(docsString);
+        }
+        
+        function fnOnClickSqlBtn() {
+            const tmpInput = document.createElement("textarea");
+            const docsString = sqlDocsTemplate.replace("${author}", authorInputElement.value).replace("${today}", moment().format("YYYY.MM.DD."));
+            tmpInput.value = docsString;
+            document.body.appendChild(tmpInput);
+            tmpInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tmpInput);
+            
+            printConsoleSpan(docsString);
+        }
+
+        function printConsoleSpan(_str) {
+            const elem = document.getElementById("console-span");
+            elem.innerText = _str;
+        }
+    </script>
+</body>
+</html>
